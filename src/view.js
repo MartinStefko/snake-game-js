@@ -38,6 +38,7 @@ export class View {
         const canvas = document.createElement('canvas')
         // appending created cancas element to the this.container
         this.container.appendChild(canvas)
+        // getContext 2d on canvas will probably make possible toappend some roprtiesto canvas
         this.context = canvas.getContext('2d')
         // setting width and heaight of the project to this.projectDistance(this.gameWidth)
         canvas.setAttribute('width', this.projectDistance(this.gameWidth))
@@ -73,6 +74,20 @@ export class View {
                 )
         )
         this.context.globalAlpha = 1
+        // take rust poition 
+        const projectedFood = this.projectPosition(food)
+        // this is needed for cirle rendering
+        this.context.beginPath()
+        // add arc to the context at specified location size etc
+        this.context.arc(
+            projectedFood.x,
+            projectedFood.y,
+            this.unitOnScreen / 2.5,
+            0,
+            2 * Math.PI
+        )
+        this.context.fillStyle = '#e74c3c'
+        this.context.fill()
     }
 
 
