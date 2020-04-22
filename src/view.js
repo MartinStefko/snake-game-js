@@ -88,6 +88,21 @@ export class View {
         )
         this.context.fillStyle = '#e74c3c'
         this.context.fill()
+        // generate snake on the screen
+        this.context.lineWidth = this.unitOnScreen
+        this.context.strokeStyle = '#3498db'
+        this.context.beginPath()
+        snake
+            // mapping snake to projext Project positon
+            // get x,y 
+            .map(this.projectPosition)
+            // for each x,y draw a line in x,y location
+            .forEach(({ x, y }) => this.context.lineTo(x, y))
+        // draw the path located above
+        this.context.stroke()
+        document.getElementById('current-score').innerText = score
+        document.getElementById('best-score').innerText = bestScore
+
     }
 
 

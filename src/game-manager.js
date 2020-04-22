@@ -39,7 +39,20 @@ export class GameManager {
             0
         )
     }
-    run() {
+    // the is game loop basically, according to this everything which must re-rendered will be re-rendered
+    tick() {
+        const lastUpdate = Date.now()
+        if (this.lastUpdate) {
+            // process this.hame in interval from Date.now - previous lastUpdate
+            this.game.process(lastUpdate - this.lastUpdate)
+        }
+        // update current lastUpdate
+        this.lastUpdate = lastUpdate
+        // render the game
         this.render()
+
+    }
+    run() {
+        setInterval(this.tick.bind(this), 1000 / CONFIG.FPS)
     }
 }
