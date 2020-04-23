@@ -4,6 +4,7 @@ import CONFIG from './config'
 import { View } from './view'
 // after writing {contr} all of this has been added oller } from './controller'
 import { Controller } from './controller'
+import Storage from './storage'
 
 export class GameManager {
     constructor() {
@@ -31,7 +32,9 @@ export class GameManager {
                 CONFIG.SNAKE_DIRECTION_Y
             )
         )
-        console.log(this.game)
+        // restarting the lastUpdate and stopTime
+        this.lastUpdate = undefined
+        this.stopTime = undefined
     }
 
     onStop() {
@@ -51,8 +54,8 @@ export class GameManager {
             // snake is generated this.game.get_snake()
             this.game.get_snake(),
             this.game.score,
-            // TODO actual best score
-            0
+            // DONE actual best score
+            Storage.getBestScore()
         )
     }
     // the is game loop basically, according to this everything which must re-rendered will be re-rendered
@@ -63,6 +66,14 @@ export class GameManager {
             if (this.lastUpdate) {
                 // process this.hame in interval from Date.now - previous lastUpdate
                 this.game.process(lastUpdate - this.lastUpdate, this.controller.movement)
+                if (this.game.is_over()) {
+                    this.restart()
+                    return
+                }
+                // update best score with current score if it is bigger
+                if (this.game.score > Storage.getBestScore()) {
+                    Storage.setBestScore(this.game.score)
+                }
             }
             // update current lastUpdate
             this.lastUpdate = lastUpdate
