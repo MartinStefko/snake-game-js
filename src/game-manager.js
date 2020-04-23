@@ -2,6 +2,8 @@ import { Game, Vector } from 'wasm-snake-game'
 
 import CONFIG from './config'
 import { View } from './view'
+// after writing {contr} all of this has been added oller } from './controller'
+import { Controller } from './controller'
 
 export class GameManager {
     constructor() {
@@ -12,6 +14,9 @@ export class GameManager {
             // binding render to this GameManager create new food,snake,score,best score
             this.render.bind(this)
         )
+        this.controller = new Controller()
+        // binding onStop to this, this will ensure that i can access the onStop output from constructor
+        this.onStop.bind(this)
     }
     // on restart init new Game with value configured in config.js
     restart() {
@@ -29,6 +34,17 @@ export class GameManager {
         console.log(this.game)
     }
 
+    onStop() {
+        const now = Date.now()
+        if (this.stopTime) {
+            // check if game has been stopped, if yes remove stop time
+            this.stopTime = undefined
+            this.lastUpdate = this.time + now - this.lastUpdate
+        } else {
+            this.stopTime = now
+        }
+    }
+
     render() {
         this.view.render(
             this.game.food,
@@ -41,15 +57,19 @@ export class GameManager {
     }
     // the is game loop basically, according to this everything which must re-rendered will be re-rendered
     tick() {
-        const lastUpdate = Date.now()
-        if (this.lastUpdate) {
-            // process this.hame in interval from Date.now - previous lastUpdate
-            this.game.process(lastUpdate - this.lastUpdate)
+        // if game has stopeed i don' want to run game loop 
+        if (!this.stopTime) {
+            const lastUpdate = Date.now()
+            if (this.lastUpdate) {
+                // process this.hame in interval from Date.now - previous lastUpdate
+                this.game.process(lastUpdate - this.lastUpdate, this.controller.movement)
+            }
+            // update current lastUpdate
+            this.lastUpdate = lastUpdate
+            // render the game
+            this.render()
         }
-        // update current lastUpdate
-        this.lastUpdate = lastUpdate
-        // render the game
-        this.render()
+
 
     }
     run() {
